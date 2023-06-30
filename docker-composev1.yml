@@ -1,0 +1,56 @@
+version: "3.3"
+services:
+  spark-master37:
+    #image: cluster-spark:3.1.2
+    image: docker_spark
+    container_name: spark-master37
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8077:7077"
+      - "4041:4040"
+    
+    environment:
+      - "SPARK_LOCAL_IP=0.0.0.0"
+      - "SPARK_MASTER_PORT=7077"
+      - "SPARK_MASTER_WEBUI_PORT=8080"
+
+    # volumes:
+    #    - ./apps:/opt/spark-apps
+    #    - ./data:/opt/spark-data
+    command:
+      - "/start-master.sh"
+    networks:
+      - default
+
+  spark-worker37:
+    #image: cluster-spark:3.1.2
+    image: docker_spark
+    container_name: spark-worker37
+    depends_on: 
+      - spark-master37
+    restart: always
+    hostname: spark-worker37
+    
+    environment:
+      - "SPARK_MASTER=spark://10.0.68.37:8077"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=8G"
+      - "SPARK_WORKER_CORES=5"
+
+    ports:
+      - "8081:8080"
+      - "4042:4040"
+
+    # volumes:
+    #    - ./apps:/opt/spark-apps
+    #    - ./data:/opt/spark-data
+    command:
+      - "/start-worker.sh"
+    networks: 
+      - default
+
+networks:
+  default:
+    external:
+      name: docker_gwbridge

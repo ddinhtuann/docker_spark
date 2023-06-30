@@ -1,0 +1,33 @@
+version: "3.3"
+services:
+  spark-master37:
+    image: spark_lab/spark:latest
+    container_name: spark-master37
+    hostname: spark-master37
+    ports:
+      - "8080:8080"
+      - "8077:7077"
+    networks:
+      - default
+    environment:
+      - "SPARK_LOCAL_IP=0.0.0.0"
+      - "SPARK_MASTER_PORT=7077"
+      - "SPARK_MASTER_WEBUI_PORT=8080"
+    command: "/start-master.sh"
+
+  postgres-db:
+    image: postgres:11-buster
+    restart: always
+    container_name: postgres-db
+    hostname: postgres-db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=casa1234
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name: hadoop-net

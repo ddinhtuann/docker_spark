@@ -1,0 +1,333 @@
+comm
+
+    command:
+      - "/start-master.sh"
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-master37
+      
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+      placement:
+        constraints:
+          - node.labels.server==manager-37
+  
+  spark-worker37:
+    image: 164425/docker_spark
+    hostname: spark-worker37
+    depends_on:
+      - spark-master37
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      - "8081:8080"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      #- "SPARK_LOCAL_IP=localhost" 
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=12G"
+      - "SPARK_WORKER_CORES=6"
+    volumes:
+      - /home/adminct/Tuanvd/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/adminct/Tuanvd/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    command:
+      #- export PYSPARK_PYTHON=python3.7
+      - /start-worker.sh
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker37
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==manager-37
+
+
+  # spark-worker103:
+  #   image: docker_spark
+  #   hostname: spark-worker103
+  #   depends_on:
+  #     - spark-master37
+  #   ports:
+  #     #- "6002:5001"
+  #     - "8083:8080"
+  #   environment:
+  #     - "SPARK_MASTER=spark://spark-master37:7077"
+  #     - "SPARK_WORKER_WEBUI_PORT=8080"
+  #     - "SPARK_WORKER_MEMORY=12G"
+  #     - "SPARK_WORKER_CORES=6"
+  #   command:
+  #     - /start-worker.sh
+  #   #bash -c "python3.7 /usr/share/Handwritten-digits-classification-pyspark/api_spark.py & /start-worker.sh"
+  #     #- /start-worker.sh
+  #   volumes:
+  #   #   #- /home/ai-ubuntu/hddnew/Tuanvd/Handwritten-digits-classification-pyspark/sample1.json:/usr/share/Handwritten-digits-classification-pyspark/sample.json
+  #     - /home/ai-ubuntu/hddnew/Tuanvd/Handwritten-digits-classification-pyspark/crossdot.jar:/usr/share/Handwritten-digits-classification-pyspark/crossdot.jar
+  #   #   - /home/ai-ubuntu/hddnew/Tuanvd/Handwritten-digits-classification-pyspark/api_spark.py:/usr/share/Handwritten-digits-classification-pyspark/api_spark.py
+
+  #   networks:
+  #     hadoop-net:
+  #       aliases:
+  #         - spark-worker103
+  #   deploy:
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.labels.server==worker-103
+
+  
+  # spark-worker100:
+  #   image: docker_spark
+  #   depends_on:
+  #     - spark-master37
+  #   environment:
+  #     - "SPARK_MASTER=spark://spark-master37:7077"
+  #     - "SPARK_WORKER_WEBUI_PORT=8080"
+  #     - "SPARK_WORKER_MEMORY=16G"
+  #     - "SPARK_WORKER_CORES=8"
+
+  #   command: "/start-worker.sh"
+  #   deploy:
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.labels.server==worker-100
+  #   networks:
+  #     spark-net:
+  #       aliases:
+  #         - spark-worker100
+
+  spark-worker39:
+    image: 164425/docker_spark
+    hostname: spark-worker39
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - spark-master37
+    ports:
+      #- "6002:5001"
+      - "8083:8080"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      #- "SPARK_LOCAL_IP=localhost"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=12G"
+      - "SPARK_WORKER_CORES=6"
+    command:
+      #- export PYSPARK_PYTHON=python3.7
+      - /start-worker.sh
+    volumes:
+      - /home/adminct/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/adminct/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker39
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-39
+
+  spark-driver39:
+    image: 164425/docker_spark
+    hostname: spark-driver39
+    
+    depends_on:
+      - spark-worker39
+    ports:
+      - "2599:5001"
+    
+    volumes:
+      - /home/adminct/docker_spark/api_crack.py:/usr/share/Handwritten-digits-classification-pyspark/api_crack.py
+      - /home/adminct/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-driver39      
+    command: bash -c "python3.7 /usr/share/Handwritten-digits-classification-pyspark/api_crack.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-39
+
+  spark-worker40:
+    image: 164425/docker_spark
+    hostname: spark-worker40
+    depends_on:
+      - spark-master37
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      #- "6002:5001"
+      - "8084:8080"
+      - "2598:5001"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      #- "SPARK_LOCAL_IP=0.0.0.0"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=12G"
+      - "SPARK_WORKER_CORES=6"
+    command: bash -c "python3.7 /usr/share/Handwritten-digits-classification-pyspark/api_spark.py & /start-worker.sh"
+    volumes:
+      - /home/ubuntu/docker_spark/api_spark.py:/usr/share/Handwritten-digits-classification-pyspark/api_spark.py
+      - /home/ubuntu/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/ubuntu/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker40
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-40
+
+  spark-driver40:
+    image: 164425/docker_spark
+    hostname: spark-driver40
+    
+    depends_on:
+      - spark-worker40
+    ports:
+      - "2510:5000"
+    volumes:
+      - /home/ubuntu/docker_spark/api_getlist.py:/usr/share/Handwritten-digits-classification-pyspark/api_getlist.py
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-driver40      
+    command: bash -c "python3.7 /usr/share/Handwritten-digits-classification-pyspark/api_getlist.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-40
+
+  spark-worker10:
+    image: 164425/docker_spark
+    hostname: spark-worker10
+    depends_on:
+      - spark-master37
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"  
+    ports:
+      #- "6002:5001"
+      - "8085:8080"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=28G"
+      - "SPARK_WORKER_CORES=14"
+    command:
+      - /start-worker.sh
+    volumes:
+      #- /home/ubuntu/docker_spark/crossdot.jar:/usr/share/Handwritten-digits-classification-pyspark/crosssdot.jar
+      - /home/lamlt/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker10
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-10
+
+  spark-worker11:
+    image: 164425/docker_spark
+    hostname: spark-worker11
+    depends_on:
+      - spark-master37
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      #- "6002:5001"
+      - "8086:8080"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=28G"
+      - "SPARK_WORKER_CORES=14"
+    command:
+      - /start-worker.sh
+    volumes:
+      #- /home/ubuntu/docker_spark/crossdot.jar:/usr/share/Handwritten-digits-classification-pyspark/crosssdot.jar
+      - /home/lamlt/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker11
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-11
+
+  spark-worker12:
+    image: 164425/docker_spark
+    hostname: spark-worker12
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - spark-master37
+    ports:
+      #- "6002:5001"
+      - "8087:8080"
+    environment:
+      - "SPARK_MASTER=spark://spark-master37:7077"
+      - "SPARK_WORKER_WEBUI_PORT=8080"
+      - "SPARK_WORKER_MEMORY=28G"
+      - "SPARK_WORKER_CORES=14"
+    command:
+      - /start-worker.sh
+    volumes:
+      #- /home/ubuntu/docker_spark/crossdot.jar:/usr/share/Handwritten-digits-classification-pyspark/crosssdot.jar
+      - /home/lamlt/docker_spark/jars:/usr/share/Handwritten-digits-classification-pyspark/jars
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+    networks:
+      hadoop-net:
+        aliases:
+          - spark-worker12
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-12
+
+networks:
+  hadoop-net:
+    external: true
+
+

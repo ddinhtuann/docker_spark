@@ -1,0 +1,157 @@
+version: "3"
+services:
+  cracker37:
+    image: 164425/python3.7-centos
+    hostname: cracker37
+    # ports:
+    #   - "2599:5001"
+    
+    volumes:
+      - /home/adminct/Tuanvd/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/adminct/Tuanvd/docker_spark/crack_zip37.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip37.py
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker37  
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip37.py"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==manager-37
+
+  cracker39:
+    image: 164425/python3.7-centos
+    hostname: cracker39
+    
+    volumes:
+      - /home/adminct/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/adminct/docker_spark/crack_zip39.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip39.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker39       
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip39.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-39
+
+  cracker40:
+    image: 164425/python3.7-centos
+    hostname: cracker40
+    
+    depends_on:
+      - spark-worker39
+    
+    volumes:
+      - /home/ubuntu/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/ubuntu/docker_spark/crack_zip40.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip40.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker40     
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip40.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-40
+
+  cracker10:
+    image: 164425/python3.7-centos
+    hostname: cracker10
+    
+    volumes:
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/lamlt/docker_spark/crack_zip10.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip10.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker10      
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip10.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-10
+
+  cracker11:
+    image: 164425/python3.7-centos
+    hostname: cracker11
+    
+    volumes:
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/lamlt/docker_spark/crack_zip11.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip11.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker11      
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip11.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-11
+  
+  cracker12:
+    image: 164425/python3.7-centos
+    hostname: cracker12
+    
+    volumes:
+      - /home/lamlt/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/lamlt/docker_spark/crack_zip12.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip12.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker12      
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip12.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-12
+
+  cracker103:
+    image: 164425/python3.7-centos
+    hostname: cracker103
+    containername: cracker103
+    depends_on:
+      - spark-worker103
+    
+    volumes:
+      - /home/ai-ubuntu/hddnew/Tuanvd/docker_spark/zip_folder:/usr/share/Handwritten-digits-classification-pyspark/zip_folder
+      - /home/ai-ubuntu/hddnew/Tuanvd/docker_spark/crack_zip103.py:/usr/share/Handwritten-digits-classification-pyspark/crack_zip103.py
+      
+    networks:
+      hadoop-net:
+        aliases:
+          - cracker103     
+    command: bash -c "python /usr/share/Handwritten-digits-classification-pyspark/crack_zip103.py"
+    #command: pwd
+
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.server==worker-103
+
+networks:
+  hadoop-net:
+    external: true
